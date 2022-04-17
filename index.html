@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Rechenkönig, ein Spiel zum Kopfrechnen</title>
+		<!-- eine Notiz -->
+		
+		<style>
+			.anzeige {
+				font-size: 30px;
+				text-align: center;
+				background: #C2CFE4;
+				width: 500px; height: 150px;
+				border: 20px solid #264B87;
+				border-radius: 15px;
+				margin: 30px auto;
+				box-shadow: inset 20px 10px 15px grey;
+			}
+			/* zum Zentrieren eines Div - und des Eingabefelds */
+			.zentriert {
+				margin: 0px auto;
+				text-align: center;
+			}
+			/* Das Eingabefeld */
+			.ergebnisse {
+				font-size: 100px;
+				background: white;
+				height: 120px; width: 400px;
+				padding: 20px;
+				box-shadow: 15px 15px 15px grey;
+			}
+		</style>
+	</head>
+	<!-- Ein einzelnes Attribut kann problemlos im HTML-Code stehen -->
+	<body style="background:silver;">
+		<div onclick="stelleAufgabe();"class="anzeige">
+			<p id="Frage">Willkommen beim Kopfrechnen</p>
+			<p id="Antworten">Klicke hier, um das Spiel zu starten.</p>
+		</div>
+		
+		<div class="zentriert">
+			<form onsubmit="return pruefeEingabe();">
+				<input id="eingabe" class="ergebnisse" type="text">
+			</form>
+		</div>
+		
+		<script>
+			var punkte = 0;
+			var runden = 0;
+			var level = 1;
+			var aktuellesErgebniss;
+			
+			console.log("Spiel gestartet");
+			
+			if(runden == 0){
+				holeSpielstand();
+			}
+			
+			function pruefeEingabe(){
+				
+				if( document.getElementById("eingabe").value == "Delete" || document.getElementById("eingabe").value == "Start" ){
+					localStorage.clear();
+					punkte = 0;
+					runden = 0;
+					level = 1;
+					
+					return
+				}
+				var aktuelleEingabe = document.getElementById("eingabe").value;
+				console.log("Eingabe wird geprüft");
+				
+				if( aktuelleEingabe == aktuellesErgebniss ){
+					document.getElementById("eingabe").style.background = "green";
+					punkte ++;
+				}else{
+					document.getElementById("eingabe").style.background = "red";
+				}
+				
+				setTimeout(stelleAufgabe,1000);
+				return false;
+			}
+			
+			function speichereSpielstand(){
+				localStorge.setItem('punkte', punkte);
+				localStorge.setItem('runden', runden);
+				localStorge.setItem('level', level);
+			}
+			
+			function holeSpielstand(){
+				if(localStorage.getItem('runden') != null){
+					punkte = parseInt( localStorage.getItem('punkte') );
+					runden = parseInt( localStorage.getItem('runden') );
+					level = parseInt( localStorage.getItem('level') );
+				}
+			}
+			
+			function stelleAufgabe(){
+				var ausgabe;
+				var ersteZahl;
+				var zweiteZahl;
+				var operation;
+				
+				document.getElementById("eingabe").style.background = "white";
+				document.getElementById("eingabe").value = "";
+				console.log("Stelle Aufgabe");
+				
+				runden ++;
+				if(punkte>level*5){
+					level++;
+				}
+				
+				var ersteZahl = Math.round(Math.random()*level*5+0.5);
+				var zweiteZahl = Math.round(Math.random()*level*5+0.5);
+				var operation = Math.round(Math.random()*2+0.5);
+				
+				switch (operation){
+					case 1:
+						ausgabe = ersteZahl + " + " + zweiteZahl;
+						aktuellesErgebniss = ersteZahl + zweiteZahl;
+					break;
+					case 2:
+						if( zweiteZahl > ersteZahl ){
+							var zwischenSpeicher = ersteZahl;
+							ersteZahl = zweiteZahl;
+							zweiteZahl = zwischenSpeicher;
+						}
+						ausgabe = ersteZahl + " - " + zweiteZahl;
+						aktuellesErgebniss = ersteZahl - zweiteZahl;
+						
+					break;
+					default:
+						alert("keine Übereinstimmung!");
+						console.log("switch-case konnte den Operator nicht bestimmen");
+				}
+			document.getElementById("Frage").innerHTML = ausgabe;
+			document.getElementById("Antworten").innerHTML = "Level " + level + " Punkte " + punkte + " Runden " + runden;
+			document.getElementById("Frage").innerHTML = ausgabe;
+			speichereSpielstand;
+			}
+		</script>
+	</body>
+</html>
